@@ -1,0 +1,73 @@
+import { Button, VerticalBox , LineEdit} from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    in-out property<string> results: "Hello";
+    in-out property<string> label: "Quote";
+    callback divide-income(string);
+    property <int> space: 40;
+    background: #313e50;
+    GridLayout {
+        spacing: (space / 2) * 1px;
+        padding: (space) * 1px;
+        Row {
+            Text {
+                font-size: 22px;
+                font-weight: 900;
+                horizontal-alignment: center;
+                // vertical-alignment: center;
+                color: gray;
+                text: "\{root.label}";
+            }
+        }
+        Row {
+            Text {
+                font-size: 20px;
+                font-weight: 700;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                text: "Enter your income";
+            }
+        }
+        Row {
+            income := LineEdit {
+                // width: parent.width;
+                // height: parent.height;
+                horizontal-alignment: center;
+                placeholder-text: "Enter your number";
+                height: 35px;
+                font-size: 20px;
+            }
+        }
+        Row {
+            Button {
+                text: "Calculate";
+                primary: true;
+                height: 35px;
+                clicked => {
+                    root.divide-income(income.text)
+                }
+            }
+        }
+        Row {
+            VerticalBox {
+                Rectangle {
+                    background: #f2f2f2;
+                    height: 100px;
+                    Text {
+                        color:black;
+                        horizontal-alignment: center;
+                        text: root.results;
+                    }
+                }
+
+                Rectangle {
+                    x: 0;
+                }
+
+                Rectangle {
+                    x: parent.width;
+                }
+            }
+        }
+    }
+}
