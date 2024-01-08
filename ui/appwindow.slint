@@ -1,35 +1,50 @@
-import { Button, VerticalBox , LineEdit} from "std-widgets.slint";
+import { Button, VerticalBox , LineEdit, ScrollView, Slider} from "std-widgets.slint";
+import "../GeistVariableVF.ttf";
+import "../GeistMonoVariableVF.ttf";
 
 export component AppWindow inherits Window {
     in-out property<string> results: "Hello";
-    in-out property<string> label: "Quote";
+    in-out property<string> quote: "Click the button to see new quote (;";
     in-out property <bool> open-curtain;
+    out property <int> slider-value;
     callback divide-income(string);
     callback income-edited(string);
-    property <int> space: 40;
+    property <int> space: 10;
     property <bool> income-is-empty: false;
-    animate background { duration: 800ms; }
     
     background: #313e50;
+    default-font-family: "Geist Mono";
+    default-font-size: 16px;
+    min-width: 500px;
     GridLayout {
         spacing: (space / 2) * 1px;
         padding: (space) * 1px;
         Row {
-            Text {
-                font-size: 22px;
-                font-weight: 900;
-                horizontal-alignment: center;
-                // vertical-alignment: center;
-                color: gray;
-                text: "\{root.label}";
+            VerticalBox {
+                Text {
+                    font-family: "Geist";
+                    font-size: 22px;
+                    font-weight: 200;
+                    letter-spacing: -1px;
+                    horizontal-alignment: center;
+                    // vertical-alignment: center;
+                    color: lightgray;
+                    text: "\{root.quote}";
+                }
+                // Slider {
+                //     changed => {
+                //         root.slider-value = self.value;
+                //     }
+                // }
             }
         }
         Row {
             Text {
+                font-family: "Geist";
                 font-size: 20px;
-                font-weight: 700;
+                font-weight: 500;
                 horizontal-alignment: center;
-                vertical-alignment: center;
+                vertical-alignment: bottom;
                 text: "Enter your income";
             }
         }
@@ -47,19 +62,28 @@ export component AppWindow inherits Window {
                         root.open-curtain = false;
                         root.income-is-empty = false;
                     }
+                    accepted => {
+                        if ( self.text != "") { 
+                            root.income-is-empty = false;
+                            root.open-curtain = true;
+                            root.divide-income(self.text)
+                        } else {
+                            root.income-is-empty = true;
+                        }
+                    }
                 }
                 if root.income-is-empty : Text {
                     text: "Please fill up the value";
                     color: #f55c5c;
-                    
+                    vertical-alignment: top;
                 }
             }
         }
         Row {
             Button {
-                text: "Calculate";
+                text: "Divide";
                 primary: true;
-                height: 35px;
+                height: 70px;
                 clicked => {
                     if ( income.text != "") { 
                         root.income-is-empty = false;
@@ -72,33 +96,38 @@ export component AppWindow inherits Window {
             }
         }
         Row {
-
             VerticalBox {
                 Rectangle {
-                    background: #f2f2f2;
-                    height: 100px;
-                    Text {
-                        color:black;
-                        horizontal-alignment: center;
-                        text: root.results;
+                    // background: #f2f2f2;
+                    // height: 100px;
+                    height: 150px;
+                    ScrollView {
+                        // number of line time 25px
+                        viewport-height: 25px * 4;
+                        Text {
+                            // color:black;
+                            font-family: "Geist Mono";
+                            color: #f2f2f2;
+                            horizontal-alignment: center;
+                            text: root.results;
+                        }
                     }
                     // Left curtain
                     Rectangle {
-                        background: #333333;
+                        background: #313e50;
                         x: 0px;
                         width: open-curtain ? 0px : (parent.width / 2);
                         height: parent.height;
-                        animate width { duration: 250ms; easing: ease-in; }
+                        animate width { duration: 250ms; easing: ease-out-quint; }
                     }
-
                     // Right curtain
                     Rectangle {
-                        background: #333333;
+                        background: #313e50;
                         x: open-curtain ? parent.width : (parent.width / 2);
                         width: open-curtain ? 0px : (parent.width / 2);
                         height: parent.height;
-                        animate width { duration: 250ms; easing: ease-in; }
-                        animate x { duration: 250ms; easing: ease-in; }
+                        animate width { duration: 250ms; easing: ease-out-quint; }
+                        animate x { duration: 250ms; easing: ease-out-quint; }
                     }
                 }
             }
