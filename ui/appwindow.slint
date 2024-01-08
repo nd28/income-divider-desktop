@@ -3,8 +3,13 @@ import { Button, VerticalBox , LineEdit} from "std-widgets.slint";
 export component AppWindow inherits Window {
     in-out property<string> results: "Hello";
     in-out property<string> label: "Quote";
+    in-out property <bool> open-curtain;
     callback divide-income(string);
+    callback income-edited(string);
     property <int> space: 40;
+    property <bool> income-is-empty: false;
+    animate background { duration: 800ms; }
+    
     background: #313e50;
     GridLayout {
         spacing: (space / 2) * 1px;
@@ -29,13 +34,25 @@ export component AppWindow inherits Window {
             }
         }
         Row {
-            income := LineEdit {
-                // width: parent.width;
-                // height: parent.height;
-                horizontal-alignment: center;
-                placeholder-text: "Enter your number";
-                height: 35px;
-                font-size: 20px;
+            VerticalBox {
+                padding: 0;
+                income := LineEdit {
+                    // width: parent.width;
+                    // height: parent.height;
+                    horizontal-alignment: center;
+                    placeholder-text: "Enter your number";
+                    height: 35px;
+                    font-size: 20px;
+                    edited => {
+                        root.open-curtain = false;
+                        root.income-is-empty = false;
+                    }
+                }
+                if root.income-is-empty : Text {
+                    text: "Please fill up the value";
+                    color: #f55c5c;
+                    
+                }
             }
         }
         Row {
@@ -44,11 +61,18 @@ export component AppWindow inherits Window {
                 primary: true;
                 height: 35px;
                 clicked => {
-                    root.divide-income(income.text)
+                    if ( income.text != "") { 
+                        root.income-is-empty = false;
+                        root.open-curtain = true;
+                        root.divide-income(income.text)
+                    } else {
+                        root.income-is-empty = true;
+                    }
                 }
             }
         }
         Row {
+
             VerticalBox {
                 Rectangle {
                     background: #f2f2f2;
@@ -58,14 +82,24 @@ export component AppWindow inherits Window {
                         horizontal-alignment: center;
                         text: root.results;
                     }
-                }
+                    // Left curtain
+                    Rectangle {
+                        background: #333333;
+                        x: 0px;
+                        width: open-curtain ? 0px : (parent.width / 2);
+                        height: parent.height;
+                        animate width { duration: 250ms; easing: ease-in; }
+                    }
 
-                Rectangle {
-                    x: 0;
-                }
-
-                Rectangle {
-                    x: parent.width;
+                    // Right curtain
+                    Rectangle {
+                        background: #333333;
+                        x: open-curtain ? parent.width : (parent.width / 2);
+                        width: open-curtain ? 0px : (parent.width / 2);
+                        height: parent.height;
+                        animate width { duration: 250ms; easing: ease-in; }
+                        animate x { duration: 250ms; easing: ease-in; }
+                    }
                 }
             }
         }
